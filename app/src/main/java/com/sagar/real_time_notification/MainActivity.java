@@ -2,6 +2,8 @@ package com.sagar.real_time_notification;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -10,6 +12,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +24,10 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -147,6 +154,35 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onLocationChanged(Location location) {
         Log.i(TAG, location.toString());
+        editText_Current_Location.setText(getCurrentAddress(location.getLatitude(), location.getLongitude()));
+    }
+
+
+    private Address getAddress(double latitude, double longitude) {
+        Geocoder geocoder;
+        List<Address> addresses;
+        geocoder = new Geocoder(this, Locale.getDefault());
+
+        try {
+            addresses = geocoder.getFromLocation(latitude, longitude, 1);
+            return addresses.get(0);
+        } catch (IOException e) {
+            Log.e("Exception : ", e.toString());
+        }
+        return null;
+    }
+
+
+    public String getCurrentAddress(double latitude, double longitude) {
+        Address location_address = getAddress(latitude, longitude);
+
+        if (location_address != null) {
+            String locality = location_address.getLocality();
+            String subLocality = location_address.getSubLocality();
+            if (!TextUtils.isEmpty(subLocality))
+                return subLocality.trim() + "," + locality.trim();
+        }
+        return null;
     }
 
 

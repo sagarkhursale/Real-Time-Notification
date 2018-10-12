@@ -28,7 +28,8 @@
         android:layout_marginTop="@dimen/editText_marginTop"
         android:hint="@string/prompt_current_location"
         android:inputType="textAutoComplete"
-        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead" />
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+        android:focusable="false"/>
 
 
     <TextView
