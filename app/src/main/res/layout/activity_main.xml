@@ -21,13 +21,13 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead" />
 
     <EditText
+        android:id="@+id/edt_current_location"
         style="@style/Location_EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/editText_marginTop"
         android:hint="@string/prompt_current_location"
         android:inputType="textAutoComplete"
-        android:focusable="false"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead" />
 
 
@@ -41,22 +41,24 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead" />
 
     <EditText
+        android:id="@+id/edt_destination_location"
         style="@style/Location_EditText"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/editText_marginTop"
         android:hint="@string/prompt_destination_location"
         android:inputType="textAutoComplete"
-        android:focusable="false"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead" />
 
 
     <android.support.v7.widget.AppCompatButton
+        android:id="@+id/buttonEvent"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="@dimen/button_marginTop"
         android:background="@drawable/bg_button"
+        android:enabled="false"
         android:fontFamily="sans-serif-light"
         android:paddingEnd="16dp"
         android:paddingStart="16dp"
@@ -64,7 +66,8 @@
         android:textAllCaps="true"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
         android:textColor="@color/white"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        />
 
 
 </LinearLayout>
