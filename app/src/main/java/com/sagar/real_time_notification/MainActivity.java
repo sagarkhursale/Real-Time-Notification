@@ -1,6 +1,7 @@
 package com.sagar.real_time_notification;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -20,10 +21,15 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 
 import java.io.IOException;
 import java.util.List;
@@ -34,14 +40,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         GoogleApiClient.OnConnectionFailedListener, LocationListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
+    private static final int AUTO_PLACES_REQUEST = 101;
 
     private EditText editText_Current_Location;
     private EditText editText_Destination_Location;
     private AppCompatButton buttonEvent;
 
     private GoogleApiClient mGoogleApiClient;
-    private LocationRequest mLocationRequest;
-    private Location mLastLocation;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,9 +97,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     };
 
 
+
     private void buttonClickHandler() {
         Toast.makeText(MainActivity.this, "dsdss", Toast.LENGTH_SHORT).show();
     }
+
 
 
     protected synchronized void buildGoogleApiClient() {
@@ -105,15 +113,16 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
+
     @Override
     public void onConnected(@Nullable Bundle bundle) {
         Log.i(TAG, "GoogleApiClient onConnected");
-        mLocationRequest = LocationRequest.create();
+        LocationRequest mLocationRequest = LocationRequest.create();
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(1000); // location update time
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null) {
                 Log.i(TAG, "Last Location : " + mLastLocation.toString());
                 //updateUI(mLastLocation);
@@ -124,10 +133,12 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
+
     @Override
     public void onConnectionSuspended(int i) {
         Log.i(TAG, "GoogleApiClient connection has been suspended.");
     }
+
 
 
     @Override
@@ -143,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -151,11 +163,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
+
     @Override
     public void onLocationChanged(Location location) {
         Log.i(TAG, location.toString());
         editText_Current_Location.setText(getCurrentAddress(location.getLatitude(), location.getLongitude()));
     }
+
 
 
     private Address getAddress(double latitude, double longitude) {
@@ -173,6 +187,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
+
     public String getCurrentAddress(double latitude, double longitude) {
         Address location_address = getAddress(latitude, longitude);
 
@@ -183,6 +198,33 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 return subLocality.trim() + "," + locality.trim();
         }
         return null;
+    }
+
+
+
+    public void editTextClickHandler(View view) {
+        try {
+            Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN).build(MainActivity.this);
+            startActivityForResult(intent, AUTO_PLACES_REQUEST);
+        } catch (GooglePlayServicesRepairableException | GooglePlayServicesNotAvailableException e) {
+            Log.e(TAG, "Exception : " + e.toString());
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case AUTO_PLACES_REQUEST:
+                if (resultCode == RESULT_OK) {
+                    Place autoCompletePlace = PlaceAutocomplete.getPlace(MainActivity.this, data);
+                    editText_Destination_Location.setText(autoCompletePlace.getAddress());
+                } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
+                    Status status = PlaceAutocomplete.getStatus(MainActivity.this, data);
+                    Log.i(TAG, status.getStatus().toString());
+                }
+                break;
+        }
     }
 
 

@@ -1,6 +1,8 @@
 <resources>
     <string name="app_name">Real Time Notification</string>
 
+    <string name="place_auto_complete_api">AIzaSyCRQIpvfeQHo8eN-hxRQOJe_I7r2TU-85Q</string>
+
     <string name="txt_current_location">Current Location *</string>
     <string name="txt_destination_location">Destination Location *</string>
     <string name="prompt_current_location">e.g. Pune, Maharashtra</string>
