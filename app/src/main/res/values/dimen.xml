@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="activity_horizontal_margin">32dp</dimen>
+    <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <dimen name="editText_marginTop">5dp</dimen>
+    <dimen name="editText_padding">10dp</dimen>
+    <dimen name="text_title_marginStart">5dp</dimen>
+    <dimen name="text_title_marginTop">20dp</dimen>
+    <dimen name="text_title_2_marginTop">30dp</dimen>
+    <dimen name="button_height">40dp</dimen>
+    <dimen name="button_marginTop">50dp</dimen>
+</resources>

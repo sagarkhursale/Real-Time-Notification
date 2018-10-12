@@ -1,11 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingEnd="@dimen/activity_vertical_margin"
+    android:paddingStart="@dimen/activity_vertical_margin"
+    android:paddingTop="@dimen/activity_horizontal_margin"
     tools:context=".MainActivity">
 
 
+    <TextView
+        style="@style/Location_Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/text_title_marginStart"
+        android:layout_marginTop="@dimen/text_title_marginTop"
+        android:text="@string/txt_current_location"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead" />
 
-</RelativeLayout>
+    <EditText
+        style="@style/Location_EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/editText_marginTop"
+        android:hint="@string/prompt_current_location"
+        android:inputType="textAutoComplete"
+        android:focusable="false"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead" />
+
+
+    <TextView
+        style="@style/Location_Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/text_title_marginStart"
+        android:layout_marginTop="@dimen/text_title_2_marginTop"
+        android:text="@string/txt_destination_location"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead" />
+
+    <EditText
+        style="@style/Location_EditText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/editText_marginTop"
+        android:hint="@string/prompt_destination_location"
+        android:inputType="textAutoComplete"
+        android:focusable="false"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead" />
+
+
+    <android.support.v7.widget.AppCompatButton
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/button_height"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/button_marginTop"
+        android:background="@drawable/bg_button"
+        android:fontFamily="sans-serif-light"
+        android:paddingEnd="16dp"
+        android:paddingStart="16dp"
+        android:text="@string/title_start"
+        android:textAllCaps="true"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+        android:textColor="@color/white"
+        android:textStyle="bold" />
+
+
+</LinearLayout>

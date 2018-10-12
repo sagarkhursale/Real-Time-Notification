@@ -1,3 +1,12 @@
 <resources>
-    <string name="app_name">Real-Time-Notification</string>
+    <string name="app_name">Real Time Notification</string>
+
+    <string name="txt_current_location">Current Location *</string>
+    <string name="txt_destination_location">Destination Location *</string>
+    <string name="prompt_current_location">e.g. Pune, Maharashtra</string>
+    <string name="prompt_destination_location">e.g. Mumbai, Maharashtra</string>
+    <string name="title_start">START</string>
+    <string name="title_stop">STOP</string>
+
+
 </resources>

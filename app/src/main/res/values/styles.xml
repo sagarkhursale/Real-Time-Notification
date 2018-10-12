@@ -8,4 +8,24 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+
+    <style name="Location_EditText" parent="Base.V7.Widget.AppCompat.EditText">
+        <item name="android:background">@drawable/bg_text_field</item>
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">@dimen/editText_padding</item>
+        <item name="android:textColorHint">@color/secondary_text</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">@color/primary_text</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:marqueeRepeatLimit">2</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="Location_Title" parent="TextAppearance.AppCompat.Subhead">
+        <item name="android:textColorHint">@color/secondary_text</item>
+        <item name="android:fontFamily">sans-serif-light</item>
+        <item name="android:textColor">@color/colorPrimaryDark</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>
