@@ -249,36 +249,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     @Override
     public void onLocationChanged(Location location) {
         Log.i(TAG, location.toString());
-        editText_Current_Location.setText(getCurrentAddress(location.getLatitude(), location.getLongitude()));
+        editText_Current_Location.setText(mPermissionHandler.getCurrentAddress(location.getLatitude(), location.getLongitude()));
     }
 
 
-    private Address getAddress(double latitude, double longitude) {
-        Geocoder geocoder;
-        List<Address> addresses;
-        geocoder = new Geocoder(this, Locale.getDefault());
 
-        try {
-            addresses = geocoder.getFromLocation(latitude, longitude, 1);
-            return addresses.get(0);
-        } catch (IOException e) {
-            Log.e("Exception : ", e.toString());
-        }
-        return null;
-    }
-
-
-    public String getCurrentAddress(double latitude, double longitude) {
-        Address location_address = getAddress(latitude, longitude);
-
-        if (location_address != null) {
-            String locality = location_address.getLocality();
-            String subLocality = location_address.getSubLocality();
-            if (!TextUtils.isEmpty(subLocality))
-                return subLocality.trim() + "," + locality.trim();
-        }
-        return null;
-    }
 
 
     public void editTextClickHandler(View view) {
@@ -361,7 +336,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onResult(@NonNull Status status) {
         if (status.isSuccess()) {
             Toast.makeText(this, "Geofence Added.", Toast.LENGTH_SHORT).show();
-
+            addGeofenceButton.setEnabled(false);
         } else {
             String errorMessage = GeofenceErrorMessages.getErrorString(this,
                     status.getStatusCode());
