@@ -1,6 +1,7 @@
 package com.sagar.real_time_notification;
 
 import android.Manifest;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -82,7 +83,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-
     private TextWatcher editTextWatcher = new TextWatcher() {
         @Override
         public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -104,11 +104,24 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     };
 
 
-
     public void addGeofencesButtonHandler(View view) {
-        Toast.makeText(this, "dsdsds", Toast.LENGTH_SHORT).show();
-    }
+        if (!mGoogleApiClient.isConnected()) {
+            Toast.makeText(this, getString(R.string.not_connected), Toast.LENGTH_SHORT).show();
+        }
 
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            LocationServices.GeofencingApi.addGeofences(
+                    mGoogleApiClient,
+                    // The GeofenceRequest object.
+                    getGeofencingRequest(),
+                    /*A pending intent that that is reused when calling removeGeofences(). This
+                    pending intent is used to generate an intent when a matched geofence
+                    transition is observed.**/
+                    getGeofencingPendingIntent());
+        } else {
+            Log.i(TAG, "Permission Denied");
+        }
+    }
 
 
     protected synchronized void buildGoogleApiClient() {
@@ -118,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 .addOnConnectionFailedListener(this)
                 .build();
     }
-
 
 
     @Override
@@ -140,12 +152,10 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-
     @Override
     public void onConnectionSuspended(int i) {
         Log.i(TAG, "GoogleApiClient connection has been suspended.");
     }
-
 
 
     @Override
@@ -154,13 +164,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-
     @Override
     protected void onStart() {
         super.onStart();
         mGoogleApiClient.connect();
     }
-
 
 
     @Override
@@ -171,13 +179,11 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-
     @Override
     public void onLocationChanged(Location location) {
         Log.i(TAG, location.toString());
         editText_Current_Location.setText(getCurrentAddress(location.getLatitude(), location.getLongitude()));
     }
-
 
 
     private Address getAddress(double latitude, double longitude) {
@@ -195,7 +201,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-
     public String getCurrentAddress(double latitude, double longitude) {
         Address location_address = getAddress(latitude, longitude);
 
@@ -209,7 +214,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-
     public void editTextClickHandler(View view) {
         try {
             Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN).build(MainActivity.this);
@@ -218,7 +222,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             Log.e(TAG, "Exception : " + e.toString());
         }
     }
-
 
 
     @Override
@@ -239,7 +242,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-
     private void populateGeofence(LatLng latLng) {
         Pair<String, LatLng> geofencePair = new Pair<>("destination-fence", latLng);
 
@@ -254,12 +256,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-
     private GeofencingRequest getGeofencingRequest() {
         GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
         builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
         builder.addGeofence(mGeofence);
         return builder.build();
+    }
+
+
+    private PendingIntent getGeofencingPendingIntent() {
+        Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
+        return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
     // END
