@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -85,7 +86,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         editText_Current_Location.addTextChangedListener(editTextWatcher);
         editText_Destination_Location.addTextChangedListener(editTextWatcher);
 
+
         mPermissionHandler = new RuntimePermissionHandler(this);
+
 
         addGeofenceButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -95,9 +98,13 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         });
 
 
-        // googleApiClient
-        buildGoogleApiClient();
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (mPermissionHandler.check_Request_Permissions())
+                buildGoogleApiClient();
+        } else {
+            if (mPermissionHandler.checkPlayServicesAvailability())
+                buildGoogleApiClient();
+        }
 
         // end
     }
@@ -179,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                 ResolvableApiException resolvable = (ResolvableApiException) exception;
                                 // Show the dialog by calling startResolutionForResult(),
                                 // and check the result in onActivityResult().
-                                resolvable.startResolutionForResult((Activity) getApplicationContext(), REQUEST_CHECK_SETTINGS);
+                                resolvable.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
                             } catch (IntentSender.SendIntentException e) {
                                 // Ignore the Error ..
                             }
