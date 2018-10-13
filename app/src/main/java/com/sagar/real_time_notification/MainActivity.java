@@ -22,6 +22,7 @@ import android.util.Pair;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
+
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
@@ -36,6 +37,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.model.LatLng;
+
 import static com.sagar.real_time_notification.RuntimePermissionHandler.LOCATION_PERMISSION_CONSTANT;
 import static com.sagar.real_time_notification.RuntimePermissionHandler.REQUEST_CHECK_SETTINGS;
 
@@ -226,6 +228,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             case RuntimePermissionHandler.REQUEST_PERMISSION_SETTING:
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    if (!mPermissionHandler.isInternetAvailable())
+                        Toast.makeText(this, "Check Your Connection!", Toast.LENGTH_SHORT).show();
                     mPermissionHandler.locationSettingRequest(mLocationRequest);
                 }
                 break;
@@ -234,6 +238,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 switch (resultCode) {
                     case AppCompatActivity.RESULT_OK:
                         Log.i(TAG, "location settings are satisfied!");
+                        if (!mPermissionHandler.isInternetAvailable())
+                            Toast.makeText(this, "Check Your Connection!", Toast.LENGTH_SHORT).show();
                         break;
 
                     case AppCompatActivity.RESULT_CANCELED:
@@ -276,8 +282,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     public void onResult(@NonNull Status status) {
         if (status.isSuccess()) {
-            Toast.makeText(this, "Geofence Added.", Toast.LENGTH_SHORT).show();
-            addGeofenceButton.setEnabled(false);
+            Toast.makeText(this, "Geo-fence has been added.", Toast.LENGTH_SHORT).show();
+            editText_Destination_Location.setText(null);
         } else {
             String errorMessage = GeofenceErrorMessages.getErrorString(this,
                     status.getStatusCode());
