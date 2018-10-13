@@ -36,14 +36,14 @@ public class RuntimePermissionHandler {
     private final String TAG = RuntimePermissionHandler.class.getSimpleName();
     private static final int PLAY_SERVICES_REQUEST = 111;
     protected static final int REQUEST_CHECK_SETTINGS = 112;
-    protected static final int LOCATION_PERMISSION_CONSTANT = 113;
+    static final int LOCATION_PERMISSION_CONSTANT = 113;
     private final int REQUEST_PERMISSION_SETTING = 114;
 
     private Context mContext;
     private SharedPreferences mPermissionStatus;
 
 
-    public RuntimePermissionHandler(Context mContext) {
+    RuntimePermissionHandler(Context mContext) {
         this.mContext = mContext;
         mPermissionStatus = mContext.getSharedPreferences("permissionStatus", MODE_PRIVATE);
     }

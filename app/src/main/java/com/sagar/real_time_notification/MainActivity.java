@@ -3,6 +3,7 @@ package com.sagar.real_time_notification;
 import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -12,6 +13,7 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
@@ -50,6 +52,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import static com.sagar.real_time_notification.RuntimePermissionHandler.LOCATION_PERMISSION_CONSTANT;
+
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
         GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status> {
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         editText_Current_Location.addTextChangedListener(editTextWatcher);
         editText_Destination_Location.addTextChangedListener(editTextWatcher);
 
-        mPermissionHandler=new RuntimePermissionHandler(this);
+        mPermissionHandler = new RuntimePermissionHandler(this);
 
         addGeofenceButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -335,18 +339,48 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
     }
 
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == RuntimePermissionHandler.LOCATION_PERMISSION_CONSTANT) {
+        if (requestCode == LOCATION_PERMISSION_CONSTANT) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
                 // got Permissions, just Go
                 if (mPermissionHandler.checkPlayServicesAvailability()) {
                     buildGoogleApiClient();
                 }
+
+            } else {
+
+                if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION)) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                    builder.setTitle("Permissions!");
+                    builder.setMessage("This app requires Location permission.");
+                    builder.setPositiveButton("Grant", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                            ActivityCompat.requestPermissions((Activity) getApplicationContext(), new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_CONSTANT);
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.cancel();
+                        }
+                    });
+                    builder.show();
+                } else {
+                    Toast.makeText(this, "Unable to get Permission", Toast.LENGTH_SHORT).show();
+                }
+
             }
         }
-        // ends
+        // end
     }
+
+
+
 
 
     // END
