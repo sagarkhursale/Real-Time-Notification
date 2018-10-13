@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private EditText editText_Current_Location;
     private EditText editText_Destination_Location;
-    private AppCompatButton buttonEvent;
+    private AppCompatButton addGeofenceButton;
 
     private GoogleApiClient mGoogleApiClient;
 
@@ -56,15 +56,15 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
         editText_Current_Location = findViewById(R.id.edt_current_location);
         editText_Destination_Location = findViewById(R.id.edt_destination_location);
-        buttonEvent = findViewById(R.id.buttonEvent);
+        addGeofenceButton = findViewById(R.id.addGeoFence);
 
         editText_Current_Location.addTextChangedListener(editTextWatcher);
         editText_Destination_Location.addTextChangedListener(editTextWatcher);
 
-        buttonEvent.setOnClickListener(new View.OnClickListener() {
+        addGeofenceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                buttonClickHandler();
+                addGeofencesButtonHandler(view);
             }
         });
 
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             String cur_location = editText_Current_Location.getText().toString().trim();
             String dest_location = editText_Destination_Location.getText().toString().trim();
 
-            buttonEvent.setEnabled(!cur_location.isEmpty() && !dest_location.isEmpty());
+            addGeofenceButton.setEnabled(!cur_location.isEmpty() && !dest_location.isEmpty());
         }
 
         @Override
@@ -98,8 +98,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
-    private void buttonClickHandler() {
-        Toast.makeText(MainActivity.this, "dsdss", Toast.LENGTH_SHORT).show();
+    public void addGeofencesButtonHandler(View view) {
+        Toast.makeText(this, "dsdsds", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -226,6 +226,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 break;
         }
     }
+
+
+
 
 
     // END

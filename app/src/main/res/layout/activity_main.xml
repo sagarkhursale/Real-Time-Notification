@@ -55,7 +55,7 @@
 
 
     <android.support.v7.widget.AppCompatButton
-        android:id="@+id/buttonEvent"
+        android:id="@+id/addGeoFence"
         android:layout_width="wrap_content"
         android:layout_height="@dimen/button_height"
         android:layout_gravity="center_horizontal"
@@ -70,6 +70,7 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
         android:textColor="@color/white"
         android:textStyle="bold"
+        android:onClick="addGeofencesButtonHandler"
         />
 
 
