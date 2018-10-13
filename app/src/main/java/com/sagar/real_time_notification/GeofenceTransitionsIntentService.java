@@ -48,11 +48,50 @@ public class GeofenceTransitionsIntentService extends IntentService {
             // get the geofences that were triggered..
             List<Geofence> triggeringGeofences = geofencingEvent.getTriggeringGeofences();
 
+            // get transition details as a string
+            String geofenceTransitionDetail = getGeofenceTransitionDetails(
+                    this,
+                    geofenceTransition,
+                    triggeringGeofences
+            );
+
+
+
         } else {
             Log.e(TAG, getString(R.string.geofence_transition_invalid_type, geofenceTransition));
         }
         // end
     }
+
+
+    private String getGeofenceTransitionDetails(Context context, int geofenceTransition,
+                                                List<Geofence> triggeringGeofences) {
+
+        String geofenceTransitionString = getTransitionString(geofenceTransition);
+
+        // get ID's of each geofene that was triggered
+        ArrayList<String> triggeringGeofencesIdsList = new ArrayList<String>();
+        for (Geofence geofence : triggeringGeofences) {
+            triggeringGeofencesIdsList.add(geofence.getRequestId());
+        }
+
+        String triggeringGeofencesIdsString = TextUtils.join(", ", triggeringGeofencesIdsList);
+
+        return geofenceTransitionString + ": " + triggeringGeofencesIdsString;
+    }
+
+
+    private String getTransitionString(int transitionType) {
+        switch (transitionType) {
+            case Geofence.GEOFENCE_TRANSITION_ENTER:
+                return getString(R.string.geofence_transition_entered);
+            case Geofence.GEOFENCE_TRANSITION_EXIT:
+                return getString(R.string.geofence_transition_exited);
+            default:
+                return getString(R.string.unknown_geofence_transition);
+        }
+    }
+
 
 
     // END
