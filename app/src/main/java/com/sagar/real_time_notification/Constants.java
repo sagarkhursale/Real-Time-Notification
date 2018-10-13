@@ -11,7 +11,7 @@ public final class Constants {
     }
 
 
-    public static final String PACKAGE_NAME = "com.sagar.real_time_notification";
+    private static final String PACKAGE_NAME = "com.sagar.real_time_notification";
 
 
     public static final String SHARED_PREFERENCES_NAME = PACKAGE_NAME + ".SHARED_PREFERENCES_NAME";
@@ -23,7 +23,7 @@ public final class Constants {
     /**
      * Used to set an expiration time for a geofence.
      */
-    public static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
+    private static final long GEOFENCE_EXPIRATION_IN_HOURS = 12;
 
 
     /**
@@ -32,7 +32,7 @@ public final class Constants {
     public static final long GEOFENCE_EXPIRATION_IN_MILLISECONDS =
             GEOFENCE_EXPIRATION_IN_HOURS * 60 * 60 * 1000;
     //public static final float GEOFENCE_RADIUS_IN_METERS = 1609; // 1 mile, 1.6 km
-    public static final float GEOFENCE_RADIUS_IN_METERS = 100; // 1 mile, 1.6 km
+    public static final float GEOFENCE_RADIUS_IN_METERS = 1000; // 1 mile, 1.6 km
 
 
     // end

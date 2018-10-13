@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
     private void populateGeofence(LatLng latLng) {
-        Pair<String, LatLng> geofencePair = new Pair<>("destination-fence", latLng);
+        Pair<String, LatLng> geofencePair = new Pair<>("Destination Fence", latLng);
 
         mGeofence = new Geofence.Builder()
                 .setRequestId(geofencePair.first)
@@ -273,6 +273,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     public void onResult(@NonNull Status status) {
         if (status.isSuccess()) {
             Toast.makeText(this, "Geofence Added.", Toast.LENGTH_SHORT).show();
+
         } else {
             String errorMessage = GeofenceErrorMessages.getErrorString(this,
                     status.getStatusCode());
