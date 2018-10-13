@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -53,6 +54,7 @@ import java.util.List;
 import java.util.Locale;
 
 import static com.sagar.real_time_notification.RuntimePermissionHandler.LOCATION_PERMISSION_CONSTANT;
+import static com.sagar.real_time_notification.RuntimePermissionHandler.REQUEST_CHECK_SETTINGS;
 
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -177,7 +179,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                                 ResolvableApiException resolvable = (ResolvableApiException) exception;
                                 // Show the dialog by calling startResolutionForResult(),
                                 // and check the result in onActivityResult().
-                                resolvable.startResolutionForResult((Activity) getApplicationContext(), RuntimePermissionHandler.REQUEST_CHECK_SETTINGS);
+                                resolvable.startResolutionForResult((Activity) getApplicationContext(), REQUEST_CHECK_SETTINGS);
                             } catch (IntentSender.SendIntentException e) {
                                 // Ignore the Error ..
                             }
@@ -284,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
         switch (requestCode) {
             case AUTO_PLACES_REQUEST:
                 if (resultCode == RESULT_OK) {
@@ -296,6 +299,26 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     Log.i(TAG, status.getStatus().toString());
                 }
                 break;
+
+            case RuntimePermissionHandler.REQUEST_PERMISSION_SETTING:
+                if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    if (mPermissionHandler.checkPlayServicesAvailability())
+                        buildGoogleApiClient();
+                }
+                break;
+
+            case REQUEST_CHECK_SETTINGS:
+                switch (resultCode) {
+                    case AppCompatActivity.RESULT_OK:
+                        Log.i(TAG, "location settings are satisfied!");
+                        break;
+
+                    case AppCompatActivity.RESULT_CANCELED:
+                        Toast.makeText(this, "Please, enable the Gps!", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+                break;
+
         }
     }
 
@@ -378,9 +401,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         }
         // end
     }
-
-
-
 
 
     // END
