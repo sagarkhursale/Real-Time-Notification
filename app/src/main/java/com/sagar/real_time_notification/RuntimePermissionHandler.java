@@ -35,8 +35,8 @@ import static android.content.Context.MODE_PRIVATE;
 public class RuntimePermissionHandler {
     private final String TAG = RuntimePermissionHandler.class.getSimpleName();
     private static final int PLAY_SERVICES_REQUEST = 111;
-    private static final int REQUEST_CHECK_SETTINGS = 112;
-    private final int LOCATION_PERMISSION_CONSTANT = 113;
+    protected static final int REQUEST_CHECK_SETTINGS = 112;
+    protected static final int LOCATION_PERMISSION_CONSTANT = 113;
     private final int REQUEST_PERMISSION_SETTING = 114;
 
     private Context mContext;
@@ -51,7 +51,7 @@ public class RuntimePermissionHandler {
     }
 
 
-    public boolean checkPlayServicesAvailability() {
+    protected boolean checkPlayServicesAvailability() {
         GoogleApiAvailability googleApiAvailability = GoogleApiAvailability.getInstance();
 
         int resultCode = googleApiAvailability.isGooglePlayServicesAvailable(mContext);
@@ -68,47 +68,6 @@ public class RuntimePermissionHandler {
     }
 
 
-    public synchronized void locationSettingRequest() {
-        // Get location settings
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
-        Task<LocationSettingsResponse> result =
-                LocationServices.getSettingsClient(mContext).checkLocationSettings(builder.build());
-        result.addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
-            @Override
-            public void onComplete(@NonNull Task<LocationSettingsResponse> task) {
-                try {
-                    LocationSettingsResponse response = task.getResult(ApiException.class);
-                    assert response != null;
-                    Log.i(TAG, "Test 1 : " + response.getLocationSettingsStates());
-                    Log.i(TAG, "All location settings are satisfied. The client can initialize location");
-
-                } catch (ApiException exception) {
-                    switch (exception.getStatusCode()) {
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                            // Location settings are not satisfied. But could be fixed by showing the
-                            // user a dialog.
-                            try {
-                                // Cast to a resolvable exception.
-                                ResolvableApiException resolvable = (ResolvableApiException) exception;
-                                // Show the dialog by calling startResolutionForResult(),
-                                // and check the result in onActivityResult().
-                                resolvable.startResolutionForResult((Activity) mContext, REQUEST_CHECK_SETTINGS);
-                            } catch (IntentSender.SendIntentException e) {
-                                // Ignore the Error ..
-                            }
-                            break;
-
-                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            Log.i(TAG, "Test 12 : Location settings are not satisfied, Unsupported device.");
-                            break;
-                    }
-                }
-            }
-        });
-        // end
-    }
-
-
     public boolean isInternetAvailable() {
         ConnectivityManager conn_manager = (ConnectivityManager) mContext.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = null;
@@ -119,7 +78,7 @@ public class RuntimePermissionHandler {
     }
 
 
-    public void check_Request_Permissions() {
+    public boolean check_Request_Permissions() {
 
         if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             if (ActivityCompat.shouldShowRequestPermissionRationale((Activity) mContext, Manifest.permission.ACCESS_FINE_LOCATION)) {
@@ -171,9 +130,10 @@ public class RuntimePermissionHandler {
             editor.apply();
         } else {
             // just go ahead ..
-            if (checkPlayServicesAvailability())
-                locationSettingRequest();
+            return checkPlayServicesAvailability();
         }
+
+        return false;
         // end
     }
 
