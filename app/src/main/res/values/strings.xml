@@ -33,4 +33,8 @@
     <string name="unknown_geofence_transition">Unknown Transition</string>
 
 
+    <!-- Permission Handler strings -->
+    <string name="play_services_not_available">"This Device Is Not Supported For GooglePlayServices"</string>
+
+
 </resources>
