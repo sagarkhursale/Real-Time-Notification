@@ -16,6 +16,7 @@ import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,11 +26,14 @@ import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.Status;
+import com.google.android.gms.location.Geofence;
+import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
+import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
 import java.util.List;
@@ -47,6 +51,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private AppCompatButton addGeofenceButton;
 
     private GoogleApiClient mGoogleApiClient;
+    protected Geofence mGeofence;
 
 
     @Override
@@ -68,12 +73,14 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
+
         // googleApiClient
         buildGoogleApiClient();
 
 
         // end
     }
+
 
 
     private TextWatcher editTextWatcher = new TextWatcher() {
@@ -147,6 +154,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -212,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
@@ -219,6 +228,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                 if (resultCode == RESULT_OK) {
                     Place autoCompletePlace = PlaceAutocomplete.getPlace(MainActivity.this, data);
                     editText_Destination_Location.setText(autoCompletePlace.getAddress());
+                    populateGeofence(autoCompletePlace.getLatLng());
+
                 } else if (resultCode == PlaceAutocomplete.RESULT_ERROR) {
                     Status status = PlaceAutocomplete.getStatus(MainActivity.this, data);
                     Log.i(TAG, status.getStatus().toString());
@@ -229,7 +240,27 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
 
 
+    private void populateGeofence(LatLng latLng) {
+        Pair<String, LatLng> geofencePair = new Pair<>("destination-fence", latLng);
 
+        mGeofence = new Geofence.Builder()
+                .setRequestId(geofencePair.first)
+                .setCircularRegion(geofencePair.second.latitude,
+                        geofencePair.second.longitude,
+                        Constants.GEOFENCE_RADIUS_IN_METERS)
+                .setExpirationDuration(Constants.GEOFENCE_EXPIRATION_IN_MILLISECONDS)
+                .setTransitionTypes(Geofence.GEOFENCE_TRANSITION_ENTER | Geofence.GEOFENCE_TRANSITION_EXIT)
+                .build();
+    }
+
+
+
+    private GeofencingRequest getGeofencingRequest() {
+        GeofencingRequest.Builder builder = new GeofencingRequest.Builder();
+        builder.setInitialTrigger(GeofencingRequest.INITIAL_TRIGGER_ENTER);
+        builder.addGeofence(mGeofence);
+        return builder.build();
+    }
 
     // END
 }
