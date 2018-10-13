@@ -40,13 +40,11 @@ public class RuntimePermissionHandler {
     private final int REQUEST_PERMISSION_SETTING = 114;
 
     private Context mContext;
-    private LocationRequest mLocationRequest;
     private SharedPreferences mPermissionStatus;
 
 
-    public RuntimePermissionHandler(Context mContext, LocationRequest locationRequest) {
+    public RuntimePermissionHandler(Context mContext) {
         this.mContext = mContext;
-        this.mLocationRequest = locationRequest;
         mPermissionStatus = mContext.getSharedPreferences("permissionStatus", MODE_PRIVATE);
     }
 

@@ -79,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         editText_Current_Location.addTextChangedListener(editTextWatcher);
         editText_Destination_Location.addTextChangedListener(editTextWatcher);
 
+        mPermissionHandler=new RuntimePermissionHandler(this);
+
         addGeofenceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -338,11 +340,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         if (requestCode == RuntimePermissionHandler.LOCATION_PERMISSION_CONSTANT) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 // got Permissions, just Go
-/*                if (RuntimePermissionHandler.checkPlayServices()) {
+                if (mPermissionHandler.checkPlayServicesAvailability()) {
                     buildGoogleApiClient();
-                } else {
-                    setMyLocation();
-                }*/
+                }
             }
         }
         // ends
