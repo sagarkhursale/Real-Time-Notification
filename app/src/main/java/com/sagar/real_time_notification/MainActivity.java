@@ -26,6 +26,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingRequest;
@@ -42,7 +43,7 @@ import java.util.Locale;
 
 
 public class MainActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener, LocationListener {
+        GoogleApiClient.OnConnectionFailedListener, LocationListener, ResultCallback<Status> {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private static final int AUTO_PLACES_REQUEST = 101;
@@ -114,10 +115,9 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
                     mGoogleApiClient,
                     // The GeofenceRequest object.
                     getGeofencingRequest(),
-                    /*A pending intent that that is reused when calling removeGeofences(). This
-                    pending intent is used to generate an intent when a matched geofence
+                    /*pending intent is used to generate an intent when a matched geofence
                     transition is observed.**/
-                    getGeofencingPendingIntent());
+                    getGeofencingPendingIntent()).setResultCallback(this); // Result processed in onResult()
         } else {
             Log.i(TAG, "Permission Denied");
         }
@@ -267,6 +267,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     private PendingIntent getGeofencingPendingIntent() {
         Intent intent = new Intent(this, GeofenceTransitionsIntentService.class);
         return PendingIntent.getService(this, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+    }
+
+
+    public void onResult(@NonNull Status status) {
+        if (status.isSuccess()) {
+            Toast.makeText(this, "Geofence Added.", Toast.LENGTH_SHORT).show();
+        } else {
+            String errorMessage = GeofenceErrorMessages.getErrorString(this,
+                    status.getStatusCode());
+            Log.e(TAG, errorMessage);
+        }
     }
 
     // END
