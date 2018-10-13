@@ -16,10 +16,11 @@
         <item name="android:textColorHint">@color/secondary_text</item>
         <item name="android:fontFamily">sans-serif-light</item>
         <item name="android:textColor">@color/primary_text</item>
-        <item name="android:textStyle">bold</item>
+        <item name="android:textStyle">normal</item>
         <item name="android:marqueeRepeatLimit">2</item>
         <item name="android:singleLine">true</item>
     </style>
+
 
     <style name="Location_Title" parent="TextAppearance.AppCompat.Subhead">
         <item name="android:textColorHint">@color/secondary_text</item>

@@ -5,13 +5,9 @@ import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentSender;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
-import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -20,20 +16,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.AppCompatButton;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.Geofence;
@@ -41,19 +33,9 @@ import com.google.android.gms.location.GeofencingRequest;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.location.LocationSettingsRequest;
-import com.google.android.gms.location.LocationSettingsResponse;
-import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.ui.PlaceAutocomplete;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
-
-import java.io.IOException;
-import java.util.List;
-import java.util.Locale;
-
 import static com.sagar.real_time_notification.RuntimePermissionHandler.LOCATION_PERMISSION_CONSTANT;
 import static com.sagar.real_time_notification.RuntimePermissionHandler.REQUEST_CHECK_SETTINGS;
 
@@ -70,7 +52,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
     private GoogleApiClient mGoogleApiClient;
     protected Geofence mGeofence;
-    private LocationRequest mLocationRequest;
+    private static LocationRequest mLocationRequest;
     private RuntimePermissionHandler mPermissionHandler;
 
 
@@ -86,10 +68,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         editText_Current_Location.addTextChangedListener(editTextWatcher);
         editText_Destination_Location.addTextChangedListener(editTextWatcher);
 
-
-        mPermissionHandler = new RuntimePermissionHandler(this);
-
-
         addGeofenceButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -97,13 +75,17 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             }
         });
 
+        mPermissionHandler = new RuntimePermissionHandler(this);
+
+        buildGoogleApiClient();
+
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (mPermissionHandler.check_Request_Permissions())
-                buildGoogleApiClient();
+            if (mPermissionHandler.check_Request_Permissions()) {
+                mPermissionHandler.locationSettingRequest(mLocationRequest);
+            }
         } else {
-            if (mPermissionHandler.checkPlayServicesAvailability())
-                buildGoogleApiClient();
+            mPermissionHandler.locationSettingRequest(mLocationRequest);
         }
 
         // end
@@ -163,42 +145,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
         mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         mLocationRequest.setInterval(1000); // location update time
 
-        // Get location settings
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(mLocationRequest);
-        Task<LocationSettingsResponse> result =
-                LocationServices.getSettingsClient(this).checkLocationSettings(builder.build());
-        result.addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
-            @Override
-            public void onComplete(@NonNull Task<LocationSettingsResponse> task) {
-                try {
-                    LocationSettingsResponse response = task.getResult(ApiException.class);
-                    assert response != null;
-                    Log.i(TAG, "Test 1 : " + response.getLocationSettingsStates());
-                    Log.i(TAG, "All location settings are satisfied. The client can initialize location");
-
-                } catch (ApiException exception) {
-                    switch (exception.getStatusCode()) {
-                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
-                            // Location settings are not satisfied. But could be fixed by showing the
-                            // user a dialog.
-                            try {
-                                // Cast to a resolvable exception.
-                                ResolvableApiException resolvable = (ResolvableApiException) exception;
-                                // Show the dialog by calling startResolutionForResult(),
-                                // and check the result in onActivityResult().
-                                resolvable.startResolutionForResult(MainActivity.this, REQUEST_CHECK_SETTINGS);
-                            } catch (IntentSender.SendIntentException e) {
-                                // Ignore the Error ..
-                            }
-                            break;
-
-                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
-                            Log.i(TAG, "Test 12 : Location settings are not satisfied, Unsupported device.");
-                            break;
-                    }
-                }
-            }
-        });
         // ends here..
     }
 
@@ -211,7 +157,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             if (mLastLocation != null) {
                 Log.i(TAG, "Last Location : " + mLastLocation.toString());
-                //updateUI(mLastLocation);
             }
 
             LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
@@ -253,9 +198,6 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
     }
 
 
-
-
-
     public void editTextClickHandler(View view) {
         try {
             Intent intent = new PlaceAutocomplete.IntentBuilder(PlaceAutocomplete.MODE_FULLSCREEN).build(MainActivity.this);
@@ -284,8 +226,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
 
             case RuntimePermissionHandler.REQUEST_PERMISSION_SETTING:
                 if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    if (mPermissionHandler.checkPlayServicesAvailability())
-                        buildGoogleApiClient();
+                    mPermissionHandler.locationSettingRequest(mLocationRequest);
                 }
                 break;
 
@@ -351,9 +292,7 @@ public class MainActivity extends AppCompatActivity implements GoogleApiClient.C
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                 // got Permissions, just Go
-                if (mPermissionHandler.checkPlayServicesAvailability()) {
-                    buildGoogleApiClient();
-                }
+                mPermissionHandler.locationSettingRequest(mLocationRequest);
 
             } else {
 
