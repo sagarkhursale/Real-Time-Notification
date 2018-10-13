@@ -45,8 +45,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_above="@+id/edt_current_location"
+            android:layout_marginBottom="@dimen/editText_marginTop"
             android:layout_marginStart="@dimen/text_title_marginStart"
-            android:layout_marginTop="@dimen/text_title_marginTop"
             android:text="@string/txt_current_location"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead" />
 
@@ -56,7 +56,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginTop="@dimen/editText_marginTop"
             android:focusable="false"
             android:hint="@string/prompt_current_location"
             android:inputType="textAutoComplete"
